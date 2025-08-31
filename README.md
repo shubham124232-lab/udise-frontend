@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # UDISE Dashboard Frontend
 
 A modern, responsive Next.js frontend for the UDISE Dashboard, featuring beautiful charts, hierarchical filtering, and a comprehensive school management interface.
@@ -332,3 +333,7 @@ For issues and questions:
 ---
 
 **Built with ❤️ for the UDISE Dashboard Project** 
+=======
+# udise-frontend
+Frontend for the udise
+>>>>>>> 4d2a85be196a2c45f4269229e0c8ce7bd8a82dea
