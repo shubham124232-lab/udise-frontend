@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { School, Filters, DistributionData } from '@/types'
+import { School, Filters, DistributionData, DistributionItem } from '@/types'
 import { api } from '@/lib/api'
 import { 
   Search, 
@@ -491,7 +491,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {distributionData?.managementTypeDistribution?.map((item) => {
+                {distributionData?.managementTypeDistribution?.map((item: DistributionItem) => {
                   const percentage = chartData?.calculatePercentage(item.count, chartData.managementTotal) || 0
                   return (
                     <div key={item.label} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200">
@@ -532,7 +532,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {distributionData?.locationDistribution?.map((item) => {
+                {distributionData?.locationDistribution?.map((item: DistributionItem) => {
                   const percentage = chartData?.calculatePercentage(item.count, chartData.locationTotal) || 0
                   return (
                     <div key={item.label} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200">
@@ -573,7 +573,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {distributionData?.schoolTypeDistribution?.map((item) => {
+                {distributionData?.schoolTypeDistribution?.map((item: DistributionItem) => {
                   const percentage = chartData?.calculatePercentage(item.count, chartData.schoolTypeTotal) || 0
                   return (
                     <div key={item.label} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200">
