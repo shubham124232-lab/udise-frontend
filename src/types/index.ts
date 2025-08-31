@@ -1,181 +1,161 @@
-// TypeScript type definitions for UDISE Dashboard
-// These types work like React props - they define the structure of our data
-
-// School data structure - represents a single school record (matches MongoDB schema)
 export interface School {
-  _id: string;                    // Unique identifier from MongoDB
-  udise_cod: string;             // UDISE code (unique across all schools)
-  school_na: string;             // Name of the school
-  state: string;                  // State where school is located
-  district: string;               // District within the state
-  block: string;                  // Block within the district
-  village: string;                // Village within the block
-  state_mgn: string;             // School management type (1-Department, 5-Private, etc.)
-  location: string;               // Rural or Urban location (1-Rural, 2-Urban)
-  school_typ: string;             // Type of school based on gender (1-Boys, 2-Girls, 3-Co-educational)
-  school_cat?: string;            // School category/level
-  school_status?: string;         // School operational status
-  establishment_year?: number;    // Year school was established (optional)
-  total_students?: number;        // Total number of students (optional)
-  total_teachers?: number;        // Total number of teachers (optional)
-  infrastructure: {               // Infrastructure details
-    has_electricity: boolean;     // Does school have electricity?
-    has_drinking_water: boolean;  // Does school have drinking water?
-    has_toilets: boolean;         // Does school have toilets?
-    has_library: boolean;         // Does school have library?
-    has_computer_lab: boolean;    // Does school have computer lab?
+  _id: string;
+  udise_code: string;
+  school_name: string;
+  state: string;
+  district: string;
+  block: string;
+  village: string;
+  management: 'Government' | 'Private Unaided' | 'Private Aided' | 'Central Government' | 'Other';
+  location: 'Rural' | 'Urban';
+  school_type: 'Co-Ed' | 'Girls' | 'Boys';
+  school_category?: string;
+  school_status?: string;
+  establishment_year?: number;
+  total_students?: number;
+  total_teachers?: number;
+  infrastructure: {
+    has_electricity: boolean;
+    has_drinking_water: boolean;
+    has_toilets: boolean;
+    has_library: boolean;
+    has_computer_lab: boolean;
   };
-  academic_performance: {         // Academic performance metrics
-    pass_percentage?: number;     // Pass percentage (optional)
-    dropout_rate?: number;        // Dropout rate (optional)
+  academic_performance: {
+    pass_percentage?: number;
+    dropout_rate?: number;
   };
-  contact_info: {                 // Contact information
-    phone?: string;               // Phone number (optional)
-    email?: string;               // Email address (optional)
-    website?: string;             // Website URL (optional)
+  contact_info: {
+    phone?: string;
+    email?: string;
+    website?: string;
   };
-  coordinates: {                  // Geographic coordinates
-    latitude?: number;            // Latitude (optional)
-    longitude?: number;           // Longitude (optional)
+  coordinates: {
+    latitude?: number;
+    longitude?: number;
   };
-  isActive: boolean;              // Is school currently active?
-  createdAt: string;              // When record was created
-  updatedAt: string;              // When record was last updated
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Filter options for searching and filtering schools
 export interface Filters {
-  state?: string;                 // Filter by state
-  district?: string;              // Filter by district
-  block?: string;                 // Filter by block
-  village?: string;               // Filter by village
-  management?: string;            // Filter by management type
-  location?: string;              // Filter by location (Rural/Urban)
-  school_type?: string;           // Filter by school type
-  search?: string;                // Search term for school name or UDISE code
-  page?: number;                  // Current page number for pagination
-  limit?: number;                 // Number of records per page
+  state?: string;
+  district?: string;
+  block?: string;
+  village?: string;
+  management?: string;
+  location?: string;
+  school_type?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
 }
 
-// Pagination information for handling large datasets
 export interface PaginationInfo {
-  currentPage: number;            // Current page number
-  totalPages: number;             // Total number of pages
-  totalRecords: number;           // Total number of records
-  hasNextPage: boolean;           // Is there a next page?
-  hasPrevPage: boolean;           // Is there a previous page?
-  limit: number;                  // Records per page
+  currentPage: number;
+  totalPages: number;
+  totalRecords: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  limit: number;
 }
 
-// API response structure - standard format for all API responses
 export interface ApiResponse<T> {
-  data: T;                        // The actual data
-  message?: string;               // Success/error message (optional)
-  error?: string;                 // Error message if something went wrong (optional)
+  data: T;
+  message?: string;
+  error?: string;
 }
 
-// User information for authentication
 export interface User {
-  id: string;                     // User ID
-  email: string;                  // User email address
-  role: 'admin' | 'user';        // User role (admin or regular user)
-  isActive: boolean;              // Is user account active?
-  createdAt: string;              // When account was created
-  updatedAt: string;              // When account was last updated
+  id: string;
+  email: string;
+  role: 'admin' | 'user';
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Authentication credentials for login/signup
 export interface LoginCredentials {
-  email: string;                  // User email
-  password: string;               // User password
+  email: string;
+  password: string;
 }
 
-// Signup credentials (extends login with optional role)
 export interface SignupCredentials extends LoginCredentials {
-  role?: 'admin' | 'user';        // Optional role (defaults to 'user')
+  role?: 'admin' | 'user';
 }
 
-// Authentication response from API
 export interface AuthResponse {
-  user: User;                     // User information
-  token: string;                  // JWT authentication token
-  message: string;                // Success message
+  user: User;
+  token: string;
+  message: string;
 }
 
-// Distribution data for charts - shows counts of different categories
 export interface DistributionItem {
-  label: string;                  // Category label (e.g., "Government", "Rural")
-  count: number;                  // Number of schools in this category
+  label: string;
+  count: number;
 }
 
-// Complete distribution data for all chart types
 export interface DistributionData {
-  managementTypeDistribution: DistributionItem[];  // Management type breakdown
-  locationDistribution: DistributionItem[];        // Rural/Urban breakdown
-  schoolTypeDistribution: DistributionItem[];      // Co-Ed/Girls/Boys breakdown
+  managementTypeDistribution: DistributionItem[];
+  locationDistribution: DistributionItem[];
+  schoolTypeDistribution: DistributionItem[];
 }
 
-// Filter options available for dropdown menus
 export interface FilterOptions {
-  states: string[];               // Available states
-  districts: string[];            // Districts for selected state
-  blocks: string[];               // Blocks for selected state+district
-  villages: string[];             // Villages for selected state+district+block
+  states: string[];
+  districts: string[];
+  blocks: string[];
+  villages: string[];
 }
 
-// School form data for creating/editing schools
 export interface SchoolFormData {
-  udise_cod: string;              // UDISE code
-  school_na: string;              // School name
-  state: string;                   // State
-  district: string;                // District
-  block: string;                   // Block
-  village: string;                 // Village
-  state_mgn: School['state_mgn'];  // Management type (using School type)
-  location: School['location'];     // Location (using School type)
-  school_typ: School['school_typ']; // School type (using School type)
-  school_cat?: string;             // School category
-  school_status?: string;          // School status
-  establishment_year?: number;     // Establishment year
-  total_students?: number;         // Total students
-  total_teachers?: number;         // Total teachers
-  infrastructure: School['infrastructure'];           // Infrastructure details
-  academic_performance: School['academic_performance']; // Academic performance
-  contact_info: School['contact_info'];               // Contact information
-  coordinates: School['coordinates'];                 // Coordinates
+  udise_code: string;
+  school_name: string;
+  state: string;
+  district: string;
+  block: string;
+  village: string;
+  management: School['management'];
+  location: School['location'];
+  school_type: School['school_type'];
+  school_category?: string;
+  school_status?: string;
+  establishment_year?: number;
+  total_students?: number;
+  total_teachers?: number;
+  infrastructure: School['infrastructure'];
+  academic_performance: School['academic_performance'];
+  contact_info: School['contact_info'];
+  coordinates: School['coordinates'];
 }
 
-// Table column configuration for schools table
 export interface TableColumn {
-  key: keyof School;              // Property name from School interface
-  label: string;                  // Display label for the column
-  sortable?: boolean;             // Can this column be sorted?
-  width?: string;                 // Column width (CSS value)
+  key: keyof School;
+  label: string;
+  sortable?: boolean;
+  width?: string;
 }
 
-// School statistics for display
 export interface SchoolStats {
-  totalStudents: number;          // Total number of students
-  totalTeachers: number;          // Total number of teachers
-  teacherStudentRatio: string;    // Ratio of students to teachers
+  totalStudents: number;
+  totalTeachers: number;
+  teacherStudentRatio: string;
 }
 
-// API error response
 export interface ApiError {
-  error: string;                  // Error message
-  details?: string[];             // Detailed error information (optional)
+  error: string;
+  details?: string[];
 }
 
-// Loading state for UI components
 export interface LoadingState {
-  isLoading: boolean;             // Is data currently loading?
-  error: string | null;           // Error message if loading failed
+  isLoading: boolean;
+  error: string | null;
 }
 
-// Chart configuration for different chart types
 export interface ChartConfig {
-  type: 'pie' | 'bar' | 'doughnut';  // Chart type
-  data: DistributionItem[];           // Data to display
-  title: string;                      // Chart title
-  colors?: string[];                  // Custom colors for chart
+  type: 'pie' | 'bar' | 'doughnut';
+  data: DistributionItem[];
+  title: string;
+  colors?: string[];
 } 
