@@ -1,18 +1,20 @@
 // TypeScript type definitions for UDISE Dashboard
 // These types work like React props - they define the structure of our data
 
-// School data structure - represents a single school record
+// School data structure - represents a single school record (matches MongoDB schema)
 export interface School {
   _id: string;                    // Unique identifier from MongoDB
-  udise_code: string;            // UDISE code (unique across all schools)
-  school_name: string;            // Name of the school
+  udise_cod: string;             // UDISE code (unique across all schools)
+  school_na: string;             // Name of the school
   state: string;                  // State where school is located
   district: string;               // District within the state
   block: string;                  // Block within the district
   village: string;                // Village within the block
-  management: 'Government' | 'Private Unaided' | 'Private Aided' | 'Central Government' | 'Other';  // School management type
-  location: 'Rural' | 'Urban';   // Rural or Urban location
-  school_type: 'Co-Ed' | 'Girls' | 'Boys';  // Type of school based on gender
+  state_mgn: string;             // School management type (1-Department, 5-Private, etc.)
+  location: string;               // Rural or Urban location (1-Rural, 2-Urban)
+  school_typ: string;             // Type of school based on gender (1-Boys, 2-Girls, 3-Co-educational)
+  school_cat?: string;            // School category/level
+  school_status?: string;         // School operational status
   establishment_year?: number;    // Year school was established (optional)
   total_students?: number;        // Total number of students (optional)
   total_teachers?: number;        // Total number of teachers (optional)
@@ -123,18 +125,20 @@ export interface FilterOptions {
 
 // School form data for creating/editing schools
 export interface SchoolFormData {
-  udise_code: string;             // UDISE code
-  school_name: string;            // School name
-  state: string;                  // State
-  district: string;               // District
-  block: string;                  // Block
-  village: string;                // Village
-  management: School['management'];  // Management type (using School type)
-  location: School['location'];      // Location (using School type)
-  school_type: School['school_type']; // School type (using School type)
-  establishment_year?: number;    // Establishment year
-  total_students?: number;        // Total students
-  total_teachers?: number;        // Total teachers
+  udise_cod: string;              // UDISE code
+  school_na: string;              // School name
+  state: string;                   // State
+  district: string;                // District
+  block: string;                   // Block
+  village: string;                 // Village
+  state_mgn: School['state_mgn'];  // Management type (using School type)
+  location: School['location'];     // Location (using School type)
+  school_typ: School['school_typ']; // School type (using School type)
+  school_cat?: string;             // School category
+  school_status?: string;          // School status
+  establishment_year?: number;     // Establishment year
+  total_students?: number;         // Total students
+  total_teachers?: number;         // Total teachers
   infrastructure: School['infrastructure'];           // Infrastructure details
   academic_performance: School['academic_performance']; // Academic performance
   contact_info: School['contact_info'];               // Contact information

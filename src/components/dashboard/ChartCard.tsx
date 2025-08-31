@@ -1,7 +1,7 @@
 'use client'
 import { ReactNode } from 'react'
-import { Card } from '@/components/ui/Card'
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import Card from '@/components/ui/Card'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { cn } from '@/lib/utils'
 
 // Chart card interface
