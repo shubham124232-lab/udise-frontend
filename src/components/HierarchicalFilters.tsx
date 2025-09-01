@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/Select';
 import { Label } from '@/components/ui/label';
 import { dataAPI } from '@/lib/api';
 import { HierarchicalFilters as FilterType } from '@/types';

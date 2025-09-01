@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { LogOut, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import HierarchicalFilters from '@/components/HierarchicalFilters';
 import SchoolsTable from '@/components/SchoolsTable';
 import DistributionCharts from '@/components/DistributionCharts';
