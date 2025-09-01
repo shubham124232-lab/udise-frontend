@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = async (email: string, password: string) => {
     try {
       setIsLoading(true)
-      const response = await api.post('/auth/signup', { email, password })
+      const response = await api.post('auth/signup', { email, password })
       const { token: authToken, user: userData } = response.data
       
       localStorage.setItem('udise_token', authToken)
