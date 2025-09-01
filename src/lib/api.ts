@@ -1,56 +1,120 @@
-import axios from 'axios'
+import axios from 'axios';
+import type { 
+  LoginCredentials, 
+  RegisterData, 
+  AuthResponse, 
+  SchoolsResponse, 
+  DistributionData,
+  FilterOptions,
+  School,
+  SchoolFormData,
+  ApiResponse,
+  HierarchicalFilters
+} from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-
-export const api = axios.create({
-  baseURL: `${API_BASE_URL}`,
-  timeout: 10000,
+// Create axios instance
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
   headers: {
     'Content-Type': 'application/json',
   },
-})
+});
 
-// Request interceptor to add auth token
+// Request interceptor to add token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('udise_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
-    return config
+    return config;
   },
   (error) => {
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
 // Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('udise_token')
-      window.location.href = '/login'
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
-// API endpoints
-export const endpoints = {
-  auth: {
-    login: '/auth/login',
-    signup: '/auth/signup',
-    me: '/auth/me',
-    logout: '/auth/logout',
+// Auth API - matching JD requirements
+export const authAPI = {
+  // POST /api/auth/login → Login with email & password → return JWT
+  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
+    const response = await api.post('/api/auth/login', credentials);
+    return response.data;
   },
-  data: {
-    schools: '/data',
-    school: (id: string) => `/data/${id}`,
-    distribution: '/data/distribution',
-    filters: '/data/filters',
-  },
-} as const
 
-export default api 
+  // POST /api/auth/signup → Register user (store hashed password)
+  register: async (data: RegisterData): Promise<AuthResponse> => {
+    const response = await api.post('/api/auth/signup', data);
+    return response.data;
+  },
+
+  // Get current user
+  getCurrentUser: async () => {
+    const response = await api.get('/api/auth/me');
+    return response.data;
+  },
+
+  // Logout
+  logout: async () => {
+    const response = await api.post('/api/auth/logout');
+    return response.data;
+  }
+};
+
+// Data API - matching JD requirements exactly
+export const dataAPI = {
+  // GET /api/data - Get School Records (with Hierarchical Filters)
+  getSchools: async (params: HierarchicalFilters & { page?: number; limit?: number }): Promise<SchoolsResponse> => {
+    const response = await api.get('/api/data', { params });
+    return response.data;
+  },
+
+  // POST /api/data - Add New Record
+  createSchool: async (data: SchoolFormData): Promise<ApiResponse<School>> => {
+    const response = await api.post('/api/data', data);
+    return response.data;
+  },
+
+  // PUT /api/data/:id - Update Record
+  updateSchool: async (id: string, data: Partial<SchoolFormData>): Promise<ApiResponse<School>> => {
+    const response = await api.put(`/api/data/${id}`, data);
+    return response.data;
+  },
+
+  // DELETE /api/data/:id - Delete Record
+  deleteSchool: async (id: string): Promise<ApiResponse<School>> => {
+    const response = await api.delete(`/api/data/${id}`);
+    return response.data;
+  },
+
+  // GET /api/data/distribution - Dynamic Distribution Data
+  getDistribution: async (filters: HierarchicalFilters): Promise<DistributionData> => {
+    const response = await api.get('/api/data/distribution', { params: filters });
+    return response.data;
+  },
+
+  // GET /api/data/filters - Get filter options for hierarchical dropdowns
+  getFilterOptions: async (filters: Partial<HierarchicalFilters> = {}): Promise<ApiResponse<FilterOptions>> => {
+    const response = await api.get('/api/data/filters', { params: filters });
+    return response.data;
+  }
+};
+
+export default api;
