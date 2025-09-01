@@ -21,7 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/Select';
 import { dataAPI } from '@/lib/api';
 import { School, SchoolFormData } from '@/types';
 
