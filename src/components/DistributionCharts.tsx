@@ -1,19 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { dataAPI } from '@/lib/api';
 import { HierarchicalFilters } from '@/types';
 
@@ -28,6 +16,8 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
     queryKey: ['distribution', filters],
     queryFn: () => dataAPI.getDistribution(filters),
   });
+
+  // const distribution = data?.data;
 
   if (isLoading) {
     return (
@@ -52,13 +42,9 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
     );
   }
 
-  // ✅ Extract distributions safely
-  const distributions = data?.data || {};
-  const { managementTypeDistribution = [], locationDistribution = [], schoolTypeDistribution = [] } = distributions;
-
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
-    if (percent < 0.05) return null;
-
+    if (percent < 0.05) return null; // Don't show labels for slices smaller than 5%
+    
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -82,16 +68,16 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Distribution Analysis</h2>
-
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Management Type */}
+        {/* Management Type Distribution */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Management Type</h3>
-          {managementTypeDistribution.length > 0 ? (
+          {data?.managementTypeDistribution && data.managementTypeDistribution.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={managementTypeDistribution}
+                  data={data.managementTypeDistribution}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -99,10 +85,9 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
-                  nameKey="label"
                 >
-                  {managementTypeDistribution.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  {data.managementTypeDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip formatter={(value) => [value, 'Schools']} />
@@ -110,18 +95,20 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-64 flex items-center justify-center text-gray-500">No data available</div>
+            <div className="h-64 flex items-center justify-center text-gray-500">
+              No data available
+            </div>
           )}
         </div>
 
-        {/* Location */}
+        {/* Location Distribution */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Location</h3>
-          {locationDistribution.length > 0 ? (
+          {data?.locationDistribution && data.locationDistribution.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={locationDistribution}
+                  data={data.locationDistribution}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -129,10 +116,9 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
-                  nameKey="label"
                 >
-                  {locationDistribution.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  {data.locationDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip formatter={(value) => [value, 'Schools']} />
@@ -140,18 +126,20 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-64 flex items-center justify-center text-gray-500">No data available</div>
+            <div className="h-64 flex items-center justify-center text-gray-500">
+              No data available
+            </div>
           )}
         </div>
 
-        {/* School Type */}
+        {/* School Type Distribution */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">School Type</h3>
-          {schoolTypeDistribution.length > 0 ? (
+          {data?.schoolTypeDistribution && data.schoolTypeDistribution.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={schoolTypeDistribution}
+                  data={data.schoolTypeDistribution}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -159,10 +147,9 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
-                  nameKey="label"
                 >
-                  {schoolTypeDistribution.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  {data.schoolTypeDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip formatter={(value) => [value, 'Schools']} />
@@ -170,7 +157,9 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-64 flex items-center justify-center text-gray-500">No data available</div>
+            <div className="h-64 flex items-center justify-center text-gray-500">
+              No data available
+            </div>
           )}
         </div>
       </div>
@@ -178,23 +167,25 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
       {/* Summary Bar Chart */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Distribution Summary</h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            data={[
-              ...managementTypeDistribution.map((item) => ({ ...item, category: 'Management' })),
-              ...locationDistribution.map((item) => ({ ...item, category: 'Location' })),
-              ...schoolTypeDistribution.map((item) => ({ ...item, category: 'School Type' })),
-            ]}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" />
-            <YAxis />
-            <Tooltip formatter={(value) => [value, 'Schools']} />
-            <Legend />
-            <Bar dataKey="count" fill="#8884d8" />
-          </BarChart>
-        </ResponsiveContainer>
+        {data && (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart
+              data={[
+                ...(data?.managementTypeDistribution ?? []).map(item => ({ ...item, category: 'Management' })),
+                ...(data?.locationDistribution ?? []).map(item => ({ ...item, category: 'Location' })),
+                ...(data?.schoolTypeDistribution ?? []).map(item => ({ ...item, category: 'School Type' })),
+              ]}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="label" />
+              <YAxis />
+              <Tooltip formatter={(value) => [value, 'Schools']} />
+              <Legend />
+              <Bar dataKey="count" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );
