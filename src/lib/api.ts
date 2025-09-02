@@ -125,8 +125,7 @@ export const dataAPI = {
       Object.entries(filters).filter(([_, value]) => value !== undefined && value !== null && value !== '')
     );
     const response = await api.get('/api/data/filters', {
-      params: { ...cleanFilters, _ts: Date.now() },
-      headers: { 'Cache-Control': 'no-cache' }
+      params: { ...cleanFilters, _ts: Date.now() }
     });
     return response.data;
   }
