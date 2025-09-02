@@ -85,6 +85,7 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
+                  nameKey="label"
                 >
                   {data.managementTypeDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -116,6 +117,7 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
+                  nameKey="label" 
                 >
                   {data.locationDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -147,6 +149,7 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
+                  nameKey="label" 
                 >
                   {data.schoolTypeDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
