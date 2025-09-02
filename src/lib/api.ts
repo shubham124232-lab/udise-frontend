@@ -82,7 +82,11 @@ export const authAPI = {
 export const dataAPI = {
   // GET /api/data - Get School Records (with Hierarchical Filters)
   getSchools: async (params: HierarchicalFilters & { page?: number; limit?: number }): Promise<SchoolsResponse> => {
-    const response = await api.get('/api/data', { params });
+    // Filter out undefined values
+    const cleanParams = Object.fromEntries(
+      Object.entries(params).filter(([_, value]) => value !== undefined && value !== null && value !== '')
+    );
+    const response = await api.get('/api/data', { params: cleanParams });
     return response.data;
   },
 
@@ -106,13 +110,21 @@ export const dataAPI = {
 
   // GET /api/data/distribution - Dynamic Distribution Data
   getDistribution: async (filters: HierarchicalFilters): Promise<DistributionData> => {
-    const response = await api.get('/api/data/distribution', { params: filters });
+    // Filter out undefined values
+    const cleanFilters = Object.fromEntries(
+      Object.entries(filters).filter(([_, value]) => value !== undefined && value !== null && value !== '')
+    );
+    const response = await api.get('/api/data/distribution', { params: cleanFilters });
     return response.data;
   },
 
   // GET /api/data/filters - Get filter options for hierarchical dropdowns
   getFilterOptions: async (filters: Partial<HierarchicalFilters> = {}): Promise<ApiResponse<FilterOptions>> => {
-    const response = await api.get('/api/data/filters', { params: filters });
+    // Filter out undefined values
+    const cleanFilters = Object.fromEntries(
+      Object.entries(filters).filter(([_, value]) => value !== undefined && value !== null && value !== '')
+    );
+    const response = await api.get('/api/data/filters', { params: cleanFilters });
     return response.data;
   }
 };

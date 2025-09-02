@@ -38,35 +38,35 @@ export default function HierarchicalFilters({ filters, onFiltersChange }: Hierar
   }, [localFilters, onFiltersChange]);
 
   // Handle state change - reset dependent filters
-  const handleStateChange = (state: string) => {
-    const newFilters = { state };
+  const handleStateChange = (state?: string) => {
+    const newFilters = { state: state || undefined };
     setLocalFilters(newFilters);
   };
 
   // Handle district change - reset dependent filters
-  const handleDistrictChange = (district: string) => {
+  const handleDistrictChange = (district?: string) => {
     const newFilters = { 
       state: localFilters.state, 
-      district 
+      district: district || undefined 
     };
     setLocalFilters(newFilters);
   };
 
   // Handle block change - reset dependent filters
-  const handleBlockChange = (block: string) => {
+  const handleBlockChange = (block?: string) => {
     const newFilters = { 
       state: localFilters.state, 
       district: localFilters.district, 
-      block 
+      block: block || undefined 
     };
     setLocalFilters(newFilters);
   };
 
   // Handle village change
-  const handleVillageChange = (village: string) => {
+  const handleVillageChange = (village?: string) => {
     const newFilters = { 
       ...localFilters, 
-      village 
+      village: village || undefined 
     };
     setLocalFilters(newFilters);
   };
@@ -115,12 +115,13 @@ export default function HierarchicalFilters({ filters, onFiltersChange }: Hierar
         {/* State Filter */}
         <div className="space-y-2">
           <Label htmlFor="state">State</Label>
-          <Select value={localFilters.state || ''} onValueChange={handleStateChange}>
+          <Select value={localFilters.state || ''} onValueChange={(value) => handleStateChange(value)}>
             <SelectTrigger>
               <SelectValue placeholder="Select State" />
             </SelectTrigger>
             <SelectContent>
-              {filterOptions?.data?.states?.map((state) => (
+              <SelectItem value="">All States</SelectItem>
+              {filterOptions?.data?.states?.map((state: string) => (
                 <SelectItem key={state} value={state}>
                   {state}
                 </SelectItem>
@@ -134,14 +135,15 @@ export default function HierarchicalFilters({ filters, onFiltersChange }: Hierar
           <Label htmlFor="district">District</Label>
           <Select 
             value={localFilters.district || ''} 
-            onValueChange={handleDistrictChange}
+            onValueChange={(value) => handleDistrictChange(value)}
             disabled={!localFilters.state || !filterOptions?.data?.districts?.length}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select District" />
             </SelectTrigger>
             <SelectContent>
-              {filterOptions?.data?.districts?.map((district) => (
+              <SelectItem value="">All Districts</SelectItem>
+              {filterOptions?.data?.districts?.map((district: string) => (
                 <SelectItem key={district} value={district}>
                   {district}
                 </SelectItem>
@@ -155,14 +157,15 @@ export default function HierarchicalFilters({ filters, onFiltersChange }: Hierar
           <Label htmlFor="block">Block</Label>
           <Select 
             value={localFilters.block || ''} 
-            onValueChange={handleBlockChange}
+            onValueChange={(value) => handleBlockChange(value)}
             disabled={!localFilters.district || !filterOptions?.data?.blocks?.length}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select Block" />
             </SelectTrigger>
             <SelectContent>
-              {filterOptions?.data?.blocks?.map((block) => (
+              <SelectItem value="">All Blocks</SelectItem>
+              {filterOptions?.data?.blocks?.map((block: string) => (
                 <SelectItem key={block} value={block}>
                   {block}
                 </SelectItem>
@@ -176,14 +179,15 @@ export default function HierarchicalFilters({ filters, onFiltersChange }: Hierar
           <Label htmlFor="village">Village</Label>
           <Select 
             value={localFilters.village || ''} 
-            onValueChange={handleVillageChange}
+            onValueChange={(value) => handleVillageChange(value)}
             disabled={!localFilters.block || !filterOptions?.data?.villages?.length}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select Village" />
             </SelectTrigger>
             <SelectContent>
-              {filterOptions?.data?.villages?.map((village) => (
+              <SelectItem value="">All Villages</SelectItem>
+              {filterOptions?.data?.villages?.map((village: string) => (
                 <SelectItem key={village} value={village}>
                   {village}
                 </SelectItem>
