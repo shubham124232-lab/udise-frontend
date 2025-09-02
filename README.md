@@ -1,28 +1,31 @@
-<<<<<<< HEAD
 # UDISE Dashboard Frontend
 
 A modern, responsive Next.js frontend for the UDISE Dashboard, featuring beautiful charts, hierarchical filtering, and a comprehensive school management interface.
 
 ## 🚀 Features
 
-- **Modern UI/UX** - Beautiful, responsive design with Tailwind CSS
+- **Modern UI/UX** - Beautiful, responsive design with Tailwind CSS and ShadCN components
 - **Authentication** - JWT-based login/signup with secure token management
 - **Hierarchical Filtering** - State → District → Block → Village level filtering
 - **Interactive Charts** - Recharts-powered visualizations for data distribution
 - **Real-time Updates** - React Query for efficient data fetching and caching
 - **Responsive Design** - Mobile-first approach with Tailwind CSS
 - **Type Safety** - Full TypeScript support with comprehensive type definitions
+- **CRUD Operations** - Complete school record management with modals
+- **Performance Optimized** - Lazy loading, memoization, and efficient rendering
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: Tailwind CSS + Custom Components
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS + ShadCN UI Components
 - **State Management**: React Query (TanStack Query)
 - **Charts**: Recharts
 - **Icons**: Lucide React
 - **HTTP Client**: Axios
 - **Language**: TypeScript
 - **Authentication**: JWT with Context API
+- **Forms**: React Hook Form + Zod validation
+- **UI Components**: Radix UI primitives
 
 ## 📋 Prerequisites
 
@@ -76,19 +79,29 @@ frontend/
 │   ├── components/         # Reusable UI components
 │   │   ├── Providers.tsx   # Context providers
 │   │   ├── Header.tsx      # Navigation header
-│   │   ├── Filters.tsx     # Hierarchical filters
+│   │   ├── FilterBar.tsx   # Hierarchical filters
 │   │   ├── SchoolsTable.tsx # Schools data table
-│   │   ├── Charts.tsx      # Data visualization
-│   │   └── Modals.tsx      # School forms and details
+│   │   ├── DistributionCharts.tsx # Data visualization
+│   │   ├── SchoolFormModal.tsx # Add/Edit school modal
+│   │   ├── SchoolDetailsModal.tsx # View school details
+│   │   ├── DeleteConfirmModal.tsx # Delete confirmation
+│   │   └── ui/             # ShadCN UI components
+│   │       ├── Button.tsx
+│   │       ├── Card.tsx
+│   │       ├── Input.tsx
+│   │       ├── Select.tsx
+│   │       └── ...
 │   ├── hooks/              # Custom React hooks
-│   │   ├── useAuth.tsx     # Authentication hook
-│   │   ├── useSchools.tsx  # Schools data hook
-│   │   └── useFilters.tsx  # Filter management hook
+│   │   ├── useAuth.ts      # Authentication hook
+│   │   ├── useSchools.ts   # Schools data hook
+│   │   └── useDebounce.ts  # Debounce utility hook
 │   ├── lib/                # Utility libraries
 │   │   ├── api.ts          # API client configuration
 │   │   └── utils.ts        # Helper functions
-│   └── types/              # TypeScript type definitions
-│       └── index.ts        # Main type definitions
+│   ├── types/              # TypeScript type definitions
+│   │   └── index.ts        # Main type definitions
+│   └── utils/              # Utility functions
+│       └── performance.ts  # Performance utilities
 ├── public/                 # Static assets
 ├── package.json            # Dependencies and scripts
 ├── tailwind.config.js      # Tailwind CSS configuration
@@ -100,7 +113,7 @@ frontend/
 
 ### Design System
 
-The application uses a consistent design system built with Tailwind CSS:
+The application uses a consistent design system built with Tailwind CSS and ShadCN components:
 
 - **Colors**: Primary (blue), Secondary (gray), Success, Warning, Danger
 - **Typography**: Inter font family with consistent sizing
@@ -110,12 +123,13 @@ The application uses a consistent design system built with Tailwind CSS:
 
 ### Component Library
 
-- **Buttons**: Primary, Secondary, Danger variants
+- **Buttons**: Primary, Secondary, Danger variants with loading states
 - **Forms**: Input fields, selects, checkboxes with validation
 - **Cards**: Content containers with consistent styling
 - **Tables**: Data tables with sorting and pagination
 - **Modals**: Overlay dialogs for forms and details
 - **Charts**: Pie charts, bar charts, and data visualizations
+- **Loading States**: Skeleton loaders and spinners
 
 ## 🔐 Authentication
 
@@ -125,7 +139,7 @@ The application uses a consistent design system built with Tailwind CSS:
 - Secure token storage in localStorage
 - Automatic token refresh handling
 - Protected routes and API calls
-- User role management (admin/user)
+- User session management
 
 ### Flow
 
@@ -146,12 +160,14 @@ The application uses React Query for efficient data management:
 - **Background Updates**: Data refreshed in background
 - **Optimistic Updates**: UI updates immediately, rolls back on error
 - **Error Handling**: Consistent error states and retry logic
+- **Loading States**: Built-in loading and error states
 
 ### API Integration
 
 - **Axios Client**: Configured with interceptors for auth
 - **Type Safety**: Full TypeScript support for API responses
 - **Error Handling**: Centralized error handling and user feedback
+- **Request/Response Logging**: Development debugging support
 
 ## 🎯 Key Features Implementation
 
@@ -163,42 +179,51 @@ const [filters, setFilters] = useState<Filters>({
   state: '',
   district: '',
   block: '',
-  village: ''
+  village: '',
+  management: '',
+  location: '',
+  school_type: '',
+  search: ''
 })
 
 // Cascading filter updates
-const handleStateChange = (state: string) => {
-  setFilters(prev => ({
-    ...prev,
-    state,
-    district: '', // Reset dependent filters
-    block: '',
-    village: ''
-  }))
-}
+const handleFilterChange = useCallback((key: keyof Filters, value: string | undefined) => {
+  setFilters(prev => {
+    const newFilters = { ...prev, [key]: value, page: 1 }
+    // Clear dependent filters
+    if (key === 'state') {
+      newFilters.district = undefined
+      newFilters.block = undefined
+      newFilters.village = undefined
+    }
+    return newFilters
+  })
+}, [])
 ```
 
 ### Real-time Charts
 
 ```typescript
 // Chart data fetching with React Query
-const { data: distributionData } = useQuery({
+const { data: distributionData, isLoading } = useQuery({
   queryKey: ['distribution', filters],
   queryFn: () => fetchDistributionData(filters),
-  enabled: !!filters.state
+  enabled: !!filters.state,
+  staleTime: 2 * 60 * 1000 // 2 minutes
 })
 ```
 
-### Responsive Design
+### Performance Optimizations
 
-```css
-/* Mobile-first responsive utilities */
-.mobile-hidden { display: none; }
-.mobile-full { width: 100%; }
+```typescript
+// Memoized calculations
+const chartData = useMemo(() => {
+  if (!distributionData) return null
+  return calculateChartData(distributionData)
+}, [distributionData])
 
-@media (min-width: 641px) {
-  .desktop-hidden { display: none; }
-}
+// Debounced search
+const debouncedSearchTerm = useDebounce(searchTerm, 300)
 ```
 
 ## 🚀 Deployment
@@ -206,14 +231,11 @@ const { data: distributionData } = useQuery({
 ### Vercel Deployment
 
 1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
+2. Set environment variables in Vercel dashboard:
+   ```
+   NEXT_PUBLIC_API_URL=https://your-backend-url.onrender.com
+   ```
 3. Deploy automatically on push to main branch
-
-### Environment Variables
-
-```env
-NEXT_PUBLIC_API_URL=https://your-backend-url.onrender.com
-```
 
 ### Build Optimization
 
@@ -221,6 +243,7 @@ NEXT_PUBLIC_API_URL=https://your-backend-url.onrender.com
 - **Image Optimization**: Next.js Image component optimization
 - **Bundle Analysis**: Built-in bundle analyzer
 - **Performance Monitoring**: Core Web Vitals tracking
+- **Static Generation**: Pre-rendered pages where possible
 
 ## 🔧 Development
 
@@ -235,14 +258,14 @@ NEXT_PUBLIC_API_URL=https://your-backend-url.onrender.com
 
 - **ESLint**: Code linting and formatting
 - **TypeScript**: Strict type checking
-- **Prettier**: Code formatting (can be added)
-- **Husky**: Git hooks for quality checks (can be added)
+- **Prettier**: Code formatting (recommended)
+- **Husky**: Git hooks for quality checks (recommended)
 
 ### Testing
 
-- **Jest**: Unit testing framework (can be added)
-- **React Testing Library**: Component testing (can be added)
-- **Cypress**: E2E testing (can be added)
+- **Jest**: Unit testing framework (recommended)
+- **React Testing Library**: Component testing (recommended)
+- **Cypress**: E2E testing (recommended)
 
 ## 📱 Responsive Design
 
@@ -258,6 +281,7 @@ NEXT_PUBLIC_API_URL=https://your-backend-url.onrender.com
 - Optimized table layouts for small screens
 - Collapsible navigation and filters
 - Swipe gestures for mobile interactions
+- Responsive charts and data visualization
 
 ## 🎨 Customization
 
@@ -270,7 +294,9 @@ theme: {
     colors: {
       primary: {
         50: '#eff6ff',
-        // ... custom color palette
+        500: '#3b82f6',
+        600: '#2563eb',
+        700: '#1d4ed8'
       }
     }
   }
@@ -282,7 +308,7 @@ theme: {
 ```css
 /* Custom component classes */
 .btn-primary {
-  @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg;
+  @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
 }
 ```
 
@@ -293,6 +319,7 @@ theme: {
 - **XSS Protection**: React's built-in XSS protection
 - **CSRF Protection**: Token-based CSRF protection
 - **Secure Headers**: Next.js security headers
+- **Environment Variables**: Secure configuration management
 
 ## 📊 Performance
 
@@ -302,38 +329,48 @@ theme: {
 - **Image Optimization**: Next.js Image component
 - **Lazy Loading**: Component and route lazy loading
 - **Caching**: React Query caching strategies
+- **Memoization**: useMemo and useCallback for expensive operations
 - **Bundle Analysis**: Webpack bundle analyzer
 
-### Monitoring
+### Performance Metrics
 
-- **Core Web Vitals**: Performance metrics tracking
-- **Error Tracking**: Error boundary and logging
-- **Analytics**: User behavior and performance analytics
+- **First Contentful Paint**: < 1.5s
+- **Largest Contentful Paint**: < 2.5s
+- **Cumulative Layout Shift**: < 0.1
+- **First Input Delay**: < 100ms
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes
 4. Test thoroughly
-5. Submit a pull request
+5. Commit your changes: `git commit -m 'Add amazing feature'`
+6. Push to the branch: `git push origin feature/amazing-feature`
+7. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
 For issues and questions:
+
 1. Check the documentation
 2. Review the code examples
 3. Check browser console for errors
 4. Verify API connectivity
+5. Check network requests in DevTools
+6. Review environment variables
+
+### Common Issues
+
+- **Build Errors**: Clear `.next` folder and reinstall dependencies
+- **API Connection**: Verify `NEXT_PUBLIC_API_URL` environment variable
+- **Authentication Issues**: Check JWT token validity and storage
+- **Performance Issues**: Use React DevTools Profiler to identify bottlenecks
 
 ---
 
-**Built with ❤️ for the UDISE Dashboard Project** 
-=======
-# udise-frontend
-Frontend for the udise
->>>>>>> 4d2a85be196a2c45f4269229e0c8ce7bd8a82dea
+**Built with ❤️ for the UDISE Dashboard Project**
