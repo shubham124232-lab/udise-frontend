@@ -43,7 +43,7 @@ export default function SchoolsTable({ filters }: SchoolsTableProps) {
   const { data, isLoading, error } = useQuery({
     queryKey: ['schools', filters, currentPage, pageSize],
     queryFn: () => dataAPI.getSchools({ ...filters, page: currentPage, limit: pageSize }),
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   });
 
   // Delete school mutation

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Filters, FilterOptions } from '@/types'
-import { api } from '@/lib/api'
+import api from '@/lib/api'
 import { useQuery } from '@tanstack/react-query'
 import { Filter, Search, X } from 'lucide-react'
 
@@ -22,7 +22,7 @@ export default function FilterBar({ filters, onFiltersChange, onSearch, searchTe
       if (filters.district) params.append('district', filters.district)
       if (filters.block) params.append('block', filters.block)
       
-      const response = await api.get(`/data/filters?${params.toString()}`)
+      const response = await api.get(`/api/data/filters?${params.toString()}`)
       return response.data
     }
   })

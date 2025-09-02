@@ -78,6 +78,16 @@ export interface DistributionData {
 }
 
 // Filter types
+export interface Filters {
+  page?: number;
+  limit?: number;
+  state?: string;
+  district?: string;
+  block?: string;
+  village?: string;
+  search?: string;
+}
+
 export interface FilterOptions {
   states: string[];
   districts: string[];

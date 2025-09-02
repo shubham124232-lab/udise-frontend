@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { School, Filters } from '@/types'
-import { api } from '@/lib/api'
+import api from '@/lib/api'
 
 // Custom hook for schools data management
 export function useSchools() {
@@ -35,7 +35,7 @@ export function useSchools() {
         params.append('search', searchTerm.trim())
       }
 
-      const response = await api.get(`/data?${params.toString()}`)
+      const response = await api.get(`/api/data?${params.toString()}`)
       return response.data
     },
     // Optimize for performance
@@ -57,7 +57,7 @@ export function useSchools() {
       if (filters.block) params.append('block', filters.block)
       if (filters.village) params.append('village', filters.village)
 
-      const response = await api.get(`/data/distribution?${params.toString()}`)
+      const response = await api.get(`/api/data/distribution?${params.toString()}`)
       return response.data
     },
     staleTime: 2 * 60 * 1000, // 2 minutes for charts
@@ -73,7 +73,7 @@ export function useSchools() {
       if (filters.district) params.append('district', filters.district)
       if (filters.block) params.append('block', filters.block)
 
-      const response = await api.get(`/data/filters?${params.toString()}`)
+      const response = await api.get(`/api/data/filters?${params.toString()}`)
       return response.data
     },
     staleTime: 10 * 60 * 1000, // 10 minutes for filter options
@@ -129,7 +129,7 @@ export function useSchools() {
 
   return {
     // Data
-    schools: schoolsData?.schools || [],
+    schools: schoolsData?.data || [],
     pagination: schoolsData?.pagination,
     distributionData,
     filterOptions,
