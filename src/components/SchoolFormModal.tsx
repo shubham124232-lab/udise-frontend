@@ -35,8 +35,6 @@ const schoolFormSchema = z.object({
   management: z.string().min(1, 'Management type is required'),
   location: z.string().min(1, 'Location is required'),
   school_type: z.string().min(1, 'School type is required'),
-  total_students: z.coerce.number().optional(),
-  total_teachers: z.coerce.number().optional(),
 });
 
 type SchoolFormType = z.infer<typeof schoolFormSchema>;
@@ -63,8 +61,6 @@ export default function SchoolFormModal({ isOpen, onClose, school, onSuccess }: 
       management: 'Government',
       location: 'Rural',
       school_type: 'Co-Ed',
-      total_students: 0,
-      total_teachers: 0,
     },
   });
 
@@ -81,8 +77,6 @@ export default function SchoolFormModal({ isOpen, onClose, school, onSuccess }: 
         management: school.management,
         location: school.location,
         school_type: school.school_type,
-        total_students: school.total_students || 0,
-        total_teachers: school.total_teachers || 0,
       });
     } else {
       form.reset({
@@ -95,8 +89,6 @@ export default function SchoolFormModal({ isOpen, onClose, school, onSuccess }: 
         management: 'Government',
         location: 'Rural',
         school_type: 'Co-Ed',
-        total_students: 0,
-        total_teachers: 0,
       });
     }
   }, [school, form]);
@@ -301,28 +293,6 @@ export default function SchoolFormModal({ isOpen, onClose, school, onSuccess }: 
                   {form.formState.errors.school_type.message}
                 </p>
               )}
-            </div>
-
-            {/* Total Students */}
-            <div className="space-y-2">
-              <Label htmlFor="total_students">Total Students</Label>
-              <Input
-                id="total_students"
-                type="number"
-                min="0"
-                {...form.register('total_students')}
-              />
-            </div>
-
-            {/* Total Teachers */}
-            <div className="space-y-2">
-              <Label htmlFor="total_teachers">Total Teachers</Label>
-              <Input
-                id="total_teachers"
-                type="number"
-                min="0"
-                {...form.register('total_teachers')}
-              />
             </div>
           </div>
 
