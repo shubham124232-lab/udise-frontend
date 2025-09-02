@@ -169,9 +169,9 @@ export default function DistributionCharts({ filters }: DistributionChartsProps)
           <ResponsiveContainer width="100%" height={400}>
             <BarChart
               data={[
-                ...data.managementTypeDistribution.map(item => ({ ...item, category: 'Management' })),
-                ...data.locationDistribution.map(item => ({ ...item, category: 'Location' })),
-                ...data.schoolTypeDistribution.map(item => ({ ...item, category: 'School Type' })),
+                ...(data?.managementTypeDistribution ?? []).map(item => ({ ...item, category: 'Management' })),
+                ...(data?.locationDistribution ?? []).map(item => ({ ...item, category: 'Location' })),
+                ...(data?.schoolTypeDistribution ?? []).map(item => ({ ...item, category: 'School Type' })),
               ]}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
