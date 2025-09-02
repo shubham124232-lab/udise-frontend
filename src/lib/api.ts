@@ -124,7 +124,10 @@ export const dataAPI = {
     const cleanFilters = Object.fromEntries(
       Object.entries(filters).filter(([_, value]) => value !== undefined && value !== null && value !== '')
     );
-    const response = await api.get('/api/data/filters', { params: cleanFilters });
+    const response = await api.get('/api/data/filters', {
+      params: { ...cleanFilters, _ts: Date.now() },
+      headers: { 'Cache-Control': 'no-cache' }
+    });
     return response.data;
   }
 };
